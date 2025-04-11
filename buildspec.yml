@@ -11,27 +11,22 @@ phases:
     runtime-versions:
       java: corretto17
     commands:
-      - echo Installing Maven...
-      - yum install -y maven
+      - echo "Using Maven pre-installed by CodeBuild..."
       - mvn -version
 
   build:
     commands:
-      - echo Building project with Maven...
+      - echo "Building Spring Boot app with Maven..."
       - mvn clean package -DskipTests
-      - echo Zipping compiled project...
+      - echo "Creating ZIP package..."
       - zip -r $ARTIFACT_NAME target/*
 
   post_build:
     commands:
-      - echo Uploading ZIP to S3...
+      - echo "Uploading ZIP to S3 bucket..."
       - aws s3 cp $ARTIFACT_NAME s3://$S3_BUCKET/$ARTIFACT_NAME
-      - echo Build and upload completed successfully.
+      - echo "✅ Build and upload to S3 complete!"
 
 artifacts:
   files:
     - $ARTIFACT_NAME
-
-cache:
-  paths:
-    - "/root/.m2/**/*"
