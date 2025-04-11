@@ -25,6 +25,6 @@ Resources:
 Outputs:
   EmployeeInfoApi:
     Description: URL for application
-    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/employee'
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/uat1/api/employee'
     Export:
       Name: EmployeeInfoApi
