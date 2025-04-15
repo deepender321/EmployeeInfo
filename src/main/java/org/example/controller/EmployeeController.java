@@ -40,13 +40,27 @@ public class EmployeeController {
 //	}
 
 
-    @PostMapping("/create")
+    // @PostMapping("/create")
+    // public ResponseEntity<?> createEmployees(@RequestBody List<EmployeeDetails> employees) {
+    //     try {
+    //         List<EmployeeDetails> savedEmployees = employeeService.createMultipleEmployees(employees);
+    //         return ResponseEntity.status(HttpStatus.OK).body("Employee created Sucessfully");
+    //     }catch(Exception.SsnAlreadyExistsException e){
+    //         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    //     }
+    // }
+
+       @PostMapping("/create")
     public ResponseEntity<?> createEmployees(@RequestBody List<EmployeeDetails> employees) {
         try {
             List<EmployeeDetails> savedEmployees = employeeService.createMultipleEmployees(employees);
             return ResponseEntity.status(HttpStatus.OK).body("Employee created Sucessfully");
-        }catch(Exception.SsnAlreadyExistsException e){
+        } catch (Exception.SsnAlreadyExistsException e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception.InvalidInputException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
