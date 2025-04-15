@@ -17,7 +17,7 @@ package org.example.service.impl;
 //import org.example.service.Exception.EmployeeDoesNotExistsException;
 //import org.example.service.Exception.SsnAlreadyExistsException;
 
-
+import org.example.Exception.InvalidInputException;
 import org.example.Exception.EmployeeDoesNotExistsException;
 import org.example.Exception.SsnAlreadyExistsException;
 import org.example.dto.DeletionDto;
@@ -59,13 +59,33 @@ public class EmployeeServiceImpl implements EmployeeService  {
     // }
 
 
-      @Override
+    //   @Override
+    // public List<EmployeeDetails> createMultipleEmployees(List<EmployeeDetails> employees) {
+    //     List<EmployeeDetails> toBeSaved = new ArrayList<>();
+    //     for (EmployeeDetails emp : employees) {
+    //         if (employeeDetailsRepo.existsBySsn(emp.getSsn())) {
+    //             throw new SsnAlreadyExistsException("Employee with SSN already exists");
+    //         }
+    //         toBeSaved.add(emp);
+    //     }
+    //     return employeeDetailsRepo.saveAll(toBeSaved);
+    // }
+
+     @Override
     public List<EmployeeDetails> createMultipleEmployees(List<EmployeeDetails> employees) {
         List<EmployeeDetails> toBeSaved = new ArrayList<>();
         for (EmployeeDetails emp : employees) {
+            if (emp.getSsn() == null || emp.getSsn().trim().isEmpty()) {
+                throw new InvalidInputException("SSN is required and cannot be empty");
+            }
+            String ssnPattern = "^(\\d{3}[-/]?\\d{2}[-/]?\\d{4})$";
+            if (!emp.getSsn().matches(ssnPattern)) {
+                throw new InvalidInputException("Invalid SSN format");
+            }
             if (employeeDetailsRepo.existsBySsn(emp.getSsn())) {
                 throw new SsnAlreadyExistsException("Employee with SSN already exists");
             }
+
             toBeSaved.add(emp);
         }
         return employeeDetailsRepo.saveAll(toBeSaved);
