@@ -11,4 +11,9 @@ public class Exception{
             super(message);
         }
     }
+    public static class InvalidInputException extends RuntimeException {
+        public InvalidInputException(String message) {
+            super(message);
+        }
+    }
 }
