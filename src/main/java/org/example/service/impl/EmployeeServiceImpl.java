@@ -45,16 +45,29 @@ public class EmployeeServiceImpl implements EmployeeService  {
 //		return employeeDetailsRepo.save(employeeDetails);
 //	}
 
-    @Override
+    // @Override
+    // public List<EmployeeDetails> createMultipleEmployees(List<EmployeeDetails> employees) {
+    //     List<EmployeeDetails> toBeSaved = new ArrayList<>();
+
+    //     for (EmployeeDetails emp : employees) {
+    //         if (!employeeDetailsRepo.existsBySsn(emp.getSsn())) {
+    //             toBeSaved.add(emp);
+    //         }
+    //     }
+
+    //     return employeeDetailsRepo.saveAll(toBeSaved);
+    // }
+
+
+      @Override
     public List<EmployeeDetails> createMultipleEmployees(List<EmployeeDetails> employees) {
         List<EmployeeDetails> toBeSaved = new ArrayList<>();
-
         for (EmployeeDetails emp : employees) {
-            if (!employeeDetailsRepo.existsBySsn(emp.getSsn())) {
-                toBeSaved.add(emp);
+            if (employeeDetailsRepo.existsBySsn(emp.getSsn())) {
+                throw new SsnAlreadyExistsException("Employee with SSN already exists");
             }
+            toBeSaved.add(emp);
         }
-
         return employeeDetailsRepo.saveAll(toBeSaved);
     }
 
