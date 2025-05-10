@@ -3,38 +3,32 @@ version: 0.2
 env:
   variables:
     REPOSITORY_URI: 381492133980.dkr.ecr.us-east-1.amazonaws.com/employee-info
+  exported-variables:
+    - IMAGE_TAG
 
 phases:
   pre_build:
     commands:
-      - echo "Building Spring Boot JAR..."
+      - echo " Building Spring Boot JAR..."
       - mvn clean package -DskipTests
-      - echo "Logging in to Amazon ECR..."
-      - aws --version
+      - echo " Logging in to Amazon ECR..."
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URI
-      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - "IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F\":\" '{print $2}')"
-      - echo "Image tag: $IMAGE_TAG"
-
+      - "export IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F\":\" '{print $2}')"
+      - echo " Image tag set to: $IMAGE_TAG"
 
   build:
     commands:
-      - echo "Build started on `date`"
-      - echo "Building Docker image..."
-      - docker build -t $REPOSITORY_URI:latest .
-      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+      - echo " Building Docker image..."
+      - docker build -t employee-info .
+      - echo " Tagging Docker image for ECR..."
+      - docker tag employee-info:latest $REPOSITORY_URI:$IMAGE_TAG
 
   post_build:
     commands:
-      - echo "Build completed on `date`"
-      - echo "Pushing Docker images..."
-      - docker push $REPOSITORY_URI:latest
+      - echo "Pushing Docker images to ECR..."
       - docker push $REPOSITORY_URI:$IMAGE_TAG
-      - DOCKER_CONTAINER_NAME=employee-info
-      - echo "Generating imagedefinitions.json for ECS..."
-      - printf '[{"name":"%s","imageUri":"%s"}]' $DOCKER_CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
-      - echo "Container Name: $DOCKER_CONTAINER_NAME"
-      - echo "Generated imagedefinitions.json:"
+      - echo " Generating imagedefinitions.json for ECS..."
+      - printf '[{"name":"employee-info","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
       - cat imagedefinitions.json
 
 artifacts:
