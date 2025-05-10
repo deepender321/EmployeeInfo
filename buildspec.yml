@@ -25,7 +25,7 @@ phases:
     commands:
       - echo "Uploading ZIP to S3 bucket..."
       - aws s3 cp $ARTIFACT_NAME s3://$S3_BUCKET/$ARTIFACT_NAME
-      - echo "✅ Build and upload to S3 complete!"
+      - echo "Build and upload to S3 complete!"
 
 artifacts:
   files:

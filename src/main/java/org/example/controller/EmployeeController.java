@@ -26,7 +26,7 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     public EmployeeController(EmployeeService employeeService) {
-        this.employeeService=employeeService;
+        this.employeeService = employeeService;
     }
 
 //	@PostMapping("/create")
@@ -50,7 +50,7 @@ public class EmployeeController {
     //     }
     // }
 
-       @PostMapping("/create")
+    @PostMapping("/create")
     public ResponseEntity<?> createEmployees(@RequestBody List<EmployeeDetails> employees) {
         try {
             List<EmployeeDetails> savedEmployees = employeeService.createMultipleEmployees(employees);
@@ -66,12 +66,12 @@ public class EmployeeController {
 
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateEmployee(@PathVariable int id,@RequestBody EmployeeDetails employeeDetails){
+    public ResponseEntity<?> updateEmployee(@PathVariable int id, @RequestBody EmployeeDetails employeeDetails) {
         try {
             employeeDetails.setId(id);
             employeeService.updateEmploye(employeeDetails);
             return ResponseEntity.status(HttpStatus.OK).body("Employee updated Sucessfully");
-        }catch(Exception.EmployeeDoesNotExistsException e) {
+        } catch (Exception.EmployeeDoesNotExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }
@@ -104,11 +104,10 @@ public class EmployeeController {
     public  EmployeeDetails getEmployeeById(@PathVariable int id) {
         return employeeService.getEmployeeDetails(id);
     }
-
-    
-
     @GetMapping("/allDetails")
     public List< EmployeeDetails> getAllEmployees() {
         return employeeService.getEmployeeDetails();
+
     }
+
 }
