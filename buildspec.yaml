@@ -11,20 +11,22 @@ phases:
       - mvn clean package -DskipTests
       - echo "🔐 Logging in to Amazon ECR..."
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $REPOSITORY_URI
+      - IMAGE_TAG=build-$CODEBUILD_BUILD_ID
+      - echo "✅ Using tag: $IMAGE_TAG"
 
   build:
     commands:
       - echo "🐳 Building Docker image..."
       - docker build -t employee-info .
-      - echo "🏷️ Tagging Docker image for ECR..."
-      - docker tag employee-info:latest $REPOSITORY_URI:build-$CODEBUILD_BUILD_ID
+      - echo "🏷️ Tagging Docker image..."
+      - docker tag employee-info:latest $REPOSITORY_URI:$IMAGE_TAG
 
   post_build:
     commands:
-      - echo "🚀 Pushing Docker images to ECR..."
-      - docker push $REPOSITORY_URI:build-$CODEBUILD_BUILD_ID
-      - echo "📝 Generating imagedefinitions.json for ECS..."
-      - printf '[{"name":"employee-info","imageUri":"%s"}]' $REPOSITORY_URI:build-$CODEBUILD_BUILD_ID > imagedefinitions.json
+      - echo "🚀 Pushing Docker image..."
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo "📝 Creating imagedefinitions.json..."
+      - printf '[{"name":"employee-info","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
       - cat imagedefinitions.json
 
 artifacts:
